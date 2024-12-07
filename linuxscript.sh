@@ -1,7 +1,6 @@
 #!/bin/bash
 
 creating_users () {
-	awk -F: '($3>=1000)&&($3<60000)&&($1!="nobody"){print $1}' /etc/passwd	
 	echo What is the username
 	read username
 	sudo adduser "$username"
@@ -22,13 +21,46 @@ deleting_apps () {
 	echo deleting apps
 }
 installing_apps () {
-	echo installing apps
+	if dpkg -l | grep -i "wget" &> /dev/null
+	then
+		echo "wget is installed"
+	else
+		sudo apt install wget
+	fi
+	echo "Enter the installation link of the application to add"
+	echo "Search exmaple: Linux Latest app_name Install"
+	echo "Link Example: https://d1.google.com/linux/direct/google-chrome-stable_current_amd64.deb)"
+	read -p "Enter Link: " app_link
+
+	sudo wget "$app_link"
+	echo "Application has been added sucessfully."
+
 }
 default_security () {
-	echo default security
+	sudo apt install libpam-pwquality -y
+	sudo sed -i 's/password requisite pam_pwquality.so retry=3/password requisite pam_pwquality.so retry=3 minlen=14 difok=3 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1/' /etc/pam.d/common-password	
+	sudo sed -i "s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 90/"/etc/login.defs
+	sudo sed -i "s/^PASS_MIN_DAYS.*/PASS_MIN_DAYS 7/" /etc/login.defs
+	sudo sed -i "s/PASS_WARN_AGE.*/PASS_WARN_AGE 7/" /etc/login.defs
+	sudo sed -i "s/PASS_MIN_LEN.*/PASS_MIN_LEN 14/" /etc/login.defs
 }
 firewall () {
-	echo firewall enabled
+	echo "enable or disable"
+	read wall
+	sudo apt-get install ufw
+	sudo ufw default deny incoming
+	sudo ufw default allow outgoing
+	sudo ufw logging on
+	sudo ufw logging high
+
+	if [[ $wall == "enable" ]] 
+	then
+		sudo ufw enable
+	else
+		sudo ufw disable
+
+	fi
+	sudo ufw status
 }
 check_files () {
 	echo check what files	
@@ -85,26 +117,39 @@ do
 	
 	elif [[ $number == 3 ]]
 	then
-		echo App name
+		deleting_apps
+
+
 	elif [[ $number == 4 ]]
 	then
-		echo App name
+		installing_apps
+
+
 	elif [[ $number == 5 ]]
 	then
-		echo setting security policy
-		echo done
+		default_security
+
+
 	elif [[ $number == 6 ]]
 	then
-		firewall            
+		firewall        
+
+
 	elif [[ $number == 7 ]]
 	then
-		echo What files
+		check_file
+
+
 	elif [[ $number == 8 ]]
 	then
 		change_userpwd 
+
+
 	elif [[ $number == 9 ]] 
 	then
 		change_perms      
+
+
 	elif [[ $number = exit ]]
 	then 
 		break
