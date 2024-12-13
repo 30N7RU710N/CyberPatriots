@@ -294,9 +294,9 @@ show_menu() {
     echo "06: Update system"
     echo "07: System audit"
     echo "08: Remove Application"
-    echo "09: Set Default Password Settings"
+    echo "09: Set Default Password Settings (Password Policy: DO AT THE VERY END OF COMPETITION)"
     echo "10: Delete MP3/MP4 files"
-    echo “11: Deactivate IPv4”
+    echo "11: Deactivate IPv4"
     echo "12: Disable a Service"
     echo "13: Manage SSH Remote Login"
     echo "14: Fix Shadow File Permissions"
